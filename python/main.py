@@ -5,7 +5,7 @@ import mysql.connector
 import pandas as pd 
 
 
-
+## CONEXIÓN A BASE DE DATOS
 def database_connector():
     connection = mysql.connector.connect(
         user="root", password="root", host="127.0.0.1", port="3306", database="db"
@@ -13,6 +13,7 @@ def database_connector():
     print("DB connected")
     return connection
 
+## CARGA DE ARCHIVOS A DATAFRAME
 def data_load():
     ### DATA ###
     circuits = pd.read_csv('/Users/vr/fuchi-homework/data/circuits.csv', sep=',')
@@ -47,6 +48,7 @@ def data_load():
     #print(drivers_test)
     return circuits,constructors,drivers,pit_stop,races,results
 
+## ELIMINAR TABLAS DE BASE DE DATOS
 def drop_table(connection):
     cursor = connection.cursor()
     sql1 = "DROP TABLE IF EXISTS `circuits`;"
@@ -64,7 +66,7 @@ def drop_table(connection):
     return
     
     
-
+## CREAR TABLAS
 def create_table(connection):
     cursor = connection.cursor()
     sql1 = """
@@ -149,6 +151,7 @@ def create_table(connection):
     cursor.execute(sql6)
     return
 
+## INSERTAR DATOS DESDE DATAFRAME A TABLAS DE LA BASE DE DATOS
 def insert_data(circuits,constructors,drivers,pit_stops,races,results,connection):
     
     cols1 = "`,`".join([str(i) for i in circuits.columns.tolist()])
@@ -190,13 +193,16 @@ def insert_data(circuits,constructors,drivers,pit_stops,races,results,connection
     # the connection is not autocommitted by default, so we must commit to save our changes
     connection.commit()
     return
-    
+
+## INSTANCIAR API Y MÉTODOS 
 app = FastAPI()
 circuits,constructors,drivers,pit_stop,races,results=data_load()
 connection=database_connector()
 drop_table(connection)
 create_table(connection)
 insert_data(circuits,constructors,drivers,pit_stop,races,results,connection)
+
+## EJECUTAR APIS 
 @app.get("/best_year")
 def read_root():
     try:
