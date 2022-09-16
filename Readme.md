@@ -1,4 +1,4 @@
-Fuchi Project
+Pi-1 Project
 
 Start mysql db
 docker compose up -d
